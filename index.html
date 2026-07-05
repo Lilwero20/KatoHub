@@ -10,11 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* =====================================================================
-   TOKENS
-   A small, deliberate palette + an 8px-based spacing scale. Everything
-   downstream is derived from these values rather than magic numbers.
-   ===================================================================== */
 :root{
   --void:#08060d;
   --bg-1:#0c0913;
@@ -83,9 +78,6 @@ button{ font-family:inherit; }
 }
 @media (hover:none), (pointer:coarse){ #cursor,#cursor-ring{ display:none; } }
 
-/* =====================================================================
-   AMBIENT BACKGROUND — restrained: two soft fields, not a snow-globe
-   ===================================================================== */
 .bg{
   position:fixed; inset:0; z-index:0; overflow:hidden;
   background:
@@ -115,9 +107,6 @@ button{ font-family:inherit; }
   padding-inline: clamp(20px, 5vw, 32px);
 }
 
-/* =====================================================================
-   NAV
-   ===================================================================== */
 nav{
   position:fixed; top:0; left:0; right:0; z-index:50;
   padding: clamp(14px, 2vw, 20px) clamp(16px, 4vw, 32px);
@@ -193,9 +182,6 @@ nav{
   .nav-toggle{ display:flex; }
 }
 
-/* =====================================================================
-   HERO
-   ===================================================================== */
 .hero{
   padding-top: clamp(140px, 22vw, 200px);
   padding-bottom: clamp(56px, 8vw, 80px);
@@ -255,9 +241,6 @@ nav{
 }
 @keyframes ripple-anim{ to{ transform:scale(3); opacity:0; } }
 
-/* =====================================================================
-   PROOF STRIP — one featured stat + a short list. No card grid.
-   ===================================================================== */
 .proof{
   padding: var(--sp-9) 0;
   border-top:1px solid var(--line-soft);
@@ -317,9 +300,6 @@ nav{
 .stat-row .k{ font-size:14px; color:var(--ink-2); font-weight:500; }
 .stat-row .v{ font-family:'Outfit', sans-serif; font-size:1.15rem; font-weight:700; color:var(--ink-1); }
 
-/* =====================================================================
-   SCRIPT SECTION
-   ===================================================================== */
 .script-section{ padding: var(--sp-10) 0; }
 .section-head{ max-width:560px; margin-bottom: var(--sp-7); }
 .section-eyebrow{
@@ -403,9 +383,6 @@ pre.code{
 .script-foot span{ display:flex; align-items:center; gap:7px; }
 .script-foot svg{ width:13px; height:13px; opacity:0.7; flex-shrink:0; }
 
-/* =====================================================================
-   FEATURES — an editorial list, not a repeated card grid
-   ===================================================================== */
 .features-section{ padding: var(--sp-10) 0; }
 .feature-list{ border-top:1px solid var(--line-soft); }
 .feature-row{
@@ -439,9 +416,6 @@ pre.code{
   .feature-title{ padding-top:0; }
 }
 
-/* =====================================================================
-   FOOTER
-   ===================================================================== */
 footer{
   border-top:1px solid var(--line-soft);
   padding: var(--sp-8) 0 var(--sp-7);
@@ -461,9 +435,6 @@ footer{
   display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
 }
 
-/* =====================================================================
-   TOAST
-   ===================================================================== */
 #toast{
   position:fixed; bottom:28px; left:50%; z-index:9997;
   transform:translate(-50%, 20px);
@@ -480,15 +451,11 @@ footer{
 #toast.show{ opacity:1; transform:translate(-50%, 0); }
 #toast .ic{ width:18px; height:18px; flex-shrink:0; color:#8ee6a8; }
 
-/* =====================================================================
-   REVEAL
-   ===================================================================== */
 .reveal{ opacity:0; transform:translateY(18px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
 .reveal.visible{ opacity:1; transform:translateY(0); }
 
 @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 
-/* small phones */
 @media (max-width:420px){
   .proof-number{ font-size:2.1rem; }
   .btn-primary{ width:100%; text-align:center; }
@@ -528,7 +495,6 @@ footer{
     </div>
   </nav>
 
-  <!-- ================= HERO ================= -->
   <section class="hero container">
     <div class="eyebrow-badge reveal"><span class="dot"></span> Version 1.0.1</div>
     <h1 class="reveal">Kato Script</h1>
@@ -542,7 +508,6 @@ footer{
     </div>
   </section>
 
-  <!-- ================= PROOF STRIP ================= -->
   <section class="proof">
     <div class="container proof-grid">
       <div class="reveal">
@@ -579,7 +544,6 @@ footer{
     </div>
   </section>
 
-  <!-- ================= SCRIPT ================= -->
   <section class="script-section container" id="script">
     <div class="section-head reveal">
       <span class="section-eyebrow">The script</span>
@@ -615,7 +579,6 @@ footer{
     </div>
   </section>
 
-  <!-- ================= FEATURES ================= -->
   <section class="features-section container" id="features">
     <div class="section-head reveal">
       <span class="section-eyebrow">Why people stick with it</span>
@@ -672,12 +635,8 @@ footer{
 </div>
 
 <script>
-/* =====================================================================
-   Kato Script — page behavior
-   ===================================================================== */
 const SCRIPT_TEXT = 'loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/2466cae5b0e0aa7123b3215eae3fb0e8cf0ef4f78071a09a72a401e8b1031207/download"))()';
 
-/* ---- custom cursor (desktop only) ---- */
 const cur = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
 let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
@@ -692,7 +651,6 @@ document.querySelectorAll('a,button').forEach(el=>{
   el.addEventListener('mouseleave', ()=>{ ring.style.width='34px'; ring.style.height='34px'; ring.style.borderColor='rgba(196,181,253,0.28)'; });
 });
 
-/* ---- particle field (light touch) ---- */
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -720,7 +678,6 @@ function draw(){
 }
 draw();
 
-/* ---- mobile nav toggle ---- */
 const navToggle = document.getElementById('navToggle');
 const mobilePanel = document.getElementById('mobilePanel');
 navToggle.addEventListener('click', ()=>{
@@ -731,7 +688,6 @@ mobilePanel.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
   navToggle.classList.remove('open'); mobilePanel.classList.remove('open');
 }));
 
-/* ---- reveal on scroll ---- */
 const revealObserver = new IntersectionObserver((entries)=>{
   entries.forEach((entry,i)=>{
     if(entry.isIntersecting){
@@ -748,7 +704,6 @@ addEventListener('DOMContentLoaded', ()=>{
   });
 });
 
-/* ---- sparkline draw-in ---- */
 const spark = document.getElementById('sparkline');
 new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
@@ -756,7 +711,6 @@ new IntersectionObserver((entries)=>{
   });
 }, {threshold:0.4}).observe(spark);
 
-/* ---- copy to clipboard ---- */
 const toast = document.getElementById('toast');
 let toastTimer;
 function showToast(){
@@ -790,7 +744,6 @@ document.getElementById('heroCta').addEventListener('click', ()=>{
   document.getElementById('script').scrollIntoView({behavior:'smooth'});
 });
 
-/* ---- animated counters (only for real numeric proof points) ---- */
 function animateCount(el, target, suffix, decimals){
   const dur=1500, start=performance.now();
   function tick(now){
