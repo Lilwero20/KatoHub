@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/931b3be0faf47b1e19731fbc8cc9ed69e0c65e5a8ef854e63cc3f42d51d88cff/download"))()
+loadstring(game:HttpGet("https://www.keyforge.win/v1/load/cmrcc9kgs000004ldi547jrtq?e=1&script=cmrccaz5t000004lgzkwffrlm&lsig=DiYQPCh05Iw1I2mC8hBwc4z7prGHI5LN42nWltA-K00".."&_cb="..tostring(os.clock()).."-"..tostring(math.random(1,1e9)), true))()
