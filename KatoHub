@@ -1,1 +1,105 @@
-print("Updating")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local old = playerGui:FindFirstChild("MaintenanceMenu")
+if old then old:Destroy() end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MaintenanceMenu"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
+
+local overlay = Instance.new("Frame")
+overlay.Name = "Overlay"
+overlay.Size = UDim2.new(1, 0, 1, 0)
+overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+overlay.BackgroundTransparency = 0.5
+overlay.BorderSizePixel = 0
+overlay.Parent = screenGui
+
+local card = Instance.new("Frame")
+card.Name = "Card"
+card.AnchorPoint = Vector2.new(0.5, 0.5)
+card.Position = UDim2.new(0.5, 0, 0.5, 0)
+card.Size = UDim2.new(0, 360, 0, 300)
+card.BackgroundColor3 = Color3.fromRGB(38, 33, 92) -- dark purple
+card.BorderSizePixel = 0
+card.Parent = overlay
+
+local cardCorner = Instance.new("UICorner")
+cardCorner.CornerRadius = UDim.new(0, 14)
+cardCorner.Parent = card
+
+local cardStroke = Instance.new("UIStroke")
+cardStroke.Color = Color3.fromRGB(127, 119, 221) -- accent purple
+cardStroke.Thickness = 1.5
+cardStroke.Parent = card
+
+local iconCircle = Instance.new("Frame")
+iconCircle.AnchorPoint = Vector2.new(0.5, 0)
+iconCircle.Position = UDim2.new(0.5, 0, 0, 24)
+iconCircle.Size = UDim2.new(0, 64, 0, 64)
+iconCircle.BackgroundColor3 = Color3.fromRGB(83, 74, 183)
+iconCircle.BorderSizePixel = 0
+iconCircle.Parent = card
+
+local iconCorner = Instance.new("UICorner")
+iconCorner.CornerRadius = UDim.new(1, 0)
+iconCorner.Parent = iconCircle
+
+local iconLabel = Instance.new("TextLabel")
+iconLabel.BackgroundTransparency = 1
+iconLabel.Size = UDim2.new(1, 0, 1, 0)
+iconLabel.Text = "!"
+iconLabel.TextColor3 = Color3.fromRGB(238, 237, 254)
+iconLabel.Font = Enum.Font.GothamBold
+iconLabel.TextScaled = true
+iconLabel.Parent = iconCircle
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.BackgroundTransparency = 1
+title.AnchorPoint = Vector2.new(0.5, 0)
+title.Position = UDim2.new(0.5, 0, 0, 100)
+title.Size = UDim2.new(1, -40, 0, 32)
+title.Text = "Under Maintenance"
+title.TextColor3 = Color3.fromRGB(238, 237, 254)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.Parent = card
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Name = "Subtitle"
+subtitle.BackgroundTransparency = 1
+subtitle.AnchorPoint = Vector2.new(0.5, 0)
+subtitle.Position = UDim2.new(0.5, 0, 0, 138)
+subtitle.Size = UDim2.new(1, -50, 0, 60)
+subtitle.Text = "This script is temporarily offline while we perform scheduled updates. Please check back soon."
+subtitle.TextColor3 = Color3.fromRGB(206, 203, 246)
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 13
+subtitle.TextWrapped = true
+subtitle.Parent = card
+
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.AnchorPoint = Vector2.new(0.5, 1)
+closeButton.Position = UDim2.new(0.5, 0, 1, -20)
+closeButton.Size = UDim2.new(1, -40, 0, 38)
+closeButton.BackgroundColor3 = Color3.fromRGB(83, 74, 183)
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamMedium
+closeButton.TextSize = 14
+closeButton.BorderSizePixel = 0
+closeButton.Parent = card
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeButton
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
