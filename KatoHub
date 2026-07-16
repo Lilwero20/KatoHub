@@ -1,1 +1,1 @@
-loadstring(game:httpget("https://raw.githubusercontent.com/Lilwero20/Script-Games/refs/heads/main/1SpeedKeyboard"))()
+loadstring(game:HttpGet("https://www.keyforge.win/v1/load/cmrcc9kgs000004ldi547jrtq?e=1&script=cmrccaz5t000004lgzkwffrlm&lsig=aZO_wfr61xZSN4aBdNDy6tAZM0dqP0FzeR1ZJertgzc".."&_cb="..tostring(os.clock()).."-"..tostring(math.random(1,1e9)), true))()
