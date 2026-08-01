@@ -1,0 +1,25 @@
+local place = game.PlaceId
+
+local scripts = {
+    -- brookhaven
+    [4924922222] = "https://www.keyforge.win/v1/load/cmsair2yx3saqwdkvhlvboy2t?e=1&script=cmsaiz0l93tefwdkvp52oolyk&lsig=0EgVsUGV6eNO7YaWbbcM5ullyyZaTGEwG92I2xiRPuU",
+    -- mm2
+    [142823291] = "https://www.keyforge.win/v1/load/cmsair2yx3saqwdkvhlvboy2t?e=1&script=cmsaldvbd00v5fqkvttrukehm&lsig=ko2ISKb0tQxvggPMd7Dkeyap20acqXsmgpqzuXkLthk",
+}
+
+local url = scripts[place]
+if not url then
+    warn("[kato] wrong game lol. only brookhaven + mm2 rn")
+    return
+end
+
+-- forgot what this is for
+url = url .. "&_cb=" .. tostring(os.clock()) .. "-" .. tostring(math.random(1, 1e9))
+
+local ok, err = pcall(function()
+    loadstring(game:HttpGet(url, true))()
+end)
+
+if not ok then
+    warn("[kato] failed to load:", err)
+end
