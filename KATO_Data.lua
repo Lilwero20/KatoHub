@@ -1,15 +1,3 @@
---[[
-    KATO Script - Remote data file
-    =====================================================
-    Rutas  (waypoints de farmeo) para los 3 mundos.
-    Stages (puntos de teletransporte) para los 3 mundos.
-
-    Sube este archivo a un repositorio de GitHub y apunta
-    DATA_URLS del script principal a su URL raw.
-]]
--- Este archivo se carga con loadstring dentro de Roblox,
--- donde el constructor global CFrame ya existe.
-
 return {
     Routes = {
         [1] = {
