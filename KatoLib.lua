@@ -1,79 +1,3 @@
---[[
-    Kato Lib  v3.5.0
-    Libreria de UI para Kato Hub (Roblox / Luau). Estilo Soft UI (neumorphism claro) con contraste:
-    3 niveles de superficie (Sidebar < Background < Card), sombras marcadas y bordes accesibles
-    (texto >= 4.5:1, bordes de controles >= 3:1). Ver Theme.ControlEdges.
-
-    USO RAPIDO
-        local Kato = loadstring(game:HttpGet("URL/KatoLib.lua"))()
-        local Window = Kato:CreateWindow({
-            Title = "Kato Hub", Subtitle = "v3.0 Premium",
-            Icon = "rbxassetid://110461677380547",
-            ToggleKey = Enum.KeyCode.RightShift, Folder = "KatoHub",
-        })
-        Window:AddCategory("Main")
-        local Home = Window:CreateTab({ Name = "Home", Icon = "home", Description = "Welcome to Kato Hub" })
-        local Farm = Home:CreateSection({ Name = "Farming", Icon = "bolt", Description = "Automate your progress" })
-        Farm:AddToggle({ Name = "Auto Farm", Icon = "target", Flag = "AutoFarm", Callback = function(v) end })
-
-    ICONOS
-        Icon acepta un nombre del set integrado (Kato:GetIcons()), un rbxassetid / numero, o 1-2 letras.
-
-    SECCIONES
-        Tab:CreateSection({ Name, Description, Icon, Side = "Left"|"Right", Wide = true })
-
-    ELEMENTOS (Section)
-        AddButton, AddToggle, AddSlider, AddDropdown, AddInput (AddTextbox/AddTextBox), AddKeybind,
-        AddColorPicker, AddProgress, AddLabel, AddParagraph, AddDivider
-        Opciones comunes: Name, Description, Icon, Flag, Tooltip, Disabled, Callback
-        Objetos: :Set(v) :Get() :SetVisible(b) :SetDisabled(b) :OnChanged(fn) :Destroy()
-
-    WINDOW
-        CreateTab, AddCategory, SelectTab, GetTab, Notify, Dialog, Toggle/Show/Hide/SetVisible,
-        SetTitle, SetSubtitle, SetGlass, SetGlassStrength, SetBlur, SetScale, SetToggleKey,
-        CreateSettingsTab, CreateWatermark, SaveConfig, LoadConfig, DeleteConfig, GetConfigs,
-        SetAutoload, GetAutoload, LoadAutoloadConfig, Destroy
-
-    LIBRERIA
-        Kato:Notify, Kato:SetTheme(nombre|tabla), Kato:SetAccent(c1, c2), Kato:GetThemes(),
-        Kato:AddTheme(nombre, tabla), Kato:GetIcons(), Kato:OnUnload(fn), Kato:Unload(), Kato.Flags
-        Kato.Style  -> tabla Theme completa (colores, radios, espacios, textos, tiempos, sombras)
-        Kato.Theme  -> solo los colores (compatibilidad con v1/v2)
-        Kato.Neu    -> helpers de sombras (Neu.raised, Neu.inset) para tus propios elementos
-
-    BARRA (v3.5)
-        Window:CreateWatermark() crea la barra (logo, fps, ping, hora) arriba al centro. Con el menu abierto se
-        oculta; al minimizar, la ventana se transforma en la barra y un click en ella la vuelve a abrir (reemplaza
-        al boton flotante). Al pasar el raton aparece una flecha; al minimizar la barra rebota con una onda de acento.
-        CreateWatermark({ Toggle = false }) = barra fija solo informativa, como antes.
-        Otras opciones: Position, AnchorPoint, Text, FPS, Ping, Time.
-
-    IDIOMAS (v3.3)
-        La interfaz sale en espanol por defecto. CreateWindow({ Language = "en" }) cambia el idioma inicial;
-        lo que el jugador elija en Ajustes > Idioma se guarda en settings.json y tiene prioridad.
-        Cualquier texto (Name, Description, Title, Content, Placeholder, Tooltip, Badge, AddCategory,
-        AddDivider, AddLabel...) acepta un string o una tabla de traducciones:
-            Farm:AddToggle({ Name = { es = "Granjeo automatico", en = "Auto Farm" }, Flag = "AutoFarm" })
-        Dropdowns: el valor no cambia, solo lo que se ve -> Labels = { Nearest = { es = "Mas cercano", en = "Nearest" } }
-        Kato:SetLanguage("en"), Kato:GetLanguage(), Kato:GetLanguages(), Kato:GetLanguageName(code),
-        Kato:AddLanguage("pt", "Portugues", { None = "Nenhum", ... }), Kato:OnLanguageChanged(fn), Kato:Tr(texto)
-    TEMAS
-        "Kato" (por defecto) y "Orchid" (lila + violeta + fucsia), ademas de Sakura, Mint, Ocean, Sand,
-        Graphite y Midnight. Accent2 es el segundo acento (badges, barra de progreso, notificaciones Info);
-        si un tema no lo define vale lo mismo que Accent y se ve igual que con un solo acento.
-
-    SOMBRAS
-        Roblox no tiene box-shadow. Por defecto cada sombra se dibuja con Frames redondeados
-        concentricos (uno cada SHADOW_STEP px de difuminado; no hace falta ningun asset). Si quieres un difuminado mas fino, sube esta imagen
-        y pon su id en SHADOW_IMAGE:
-          - PNG de 160 x 160 px con fondo transparente.
-          - Un cuadrado blanco (#FFFFFF) de 96 x 96 px centrado (32 px de margen a cada lado),
-            con esquinas redondeadas de 16 px.
-          - Desenfoque gaussiano de 12 px de radio. El difuminado tiene que acabar antes del borde.
-          - SliceCenter = Rect.new(64, 64, 96, 96)  (la zona central queda totalmente opaca).
-        La libreria tine la imagen con ImageColor3 (blanco para la luz, #A9B0CB para la sombra).
-]]
-
 local SHADOW_IMAGE = ""                         -- rbxassetid de la sombra 9-slice (opcional, ver arriba)
 local SHADOW_SLICE = Rect.new(64, 64, 96, 96)   -- SliceCenter de esa imagen
 local SHADOW_EDGE = 32                          -- px entre el borde de la imagen y el de la forma
@@ -112,13 +36,6 @@ Kato.Config = {
     Dropdown = { MaxVisible = 6, SearchAt = 8 },
 }
 
-----------------------------------------------------------------------------------------------------
--- IDIOMAS
---   Kato.Strings tiene los textos internos del idioma activo (la misma tabla de siempre).
---   Cualquier texto de la API (Name, Description, Title, Content, Placeholder, Tooltip, Badge...)
---   acepta un string o una tabla de traducciones: { es = "Velocidad", en = "Speed" }.
---   Kato:SetLanguage("en") cambia todo en vivo. Para traducir textos internos edita Kato.Languages.
-----------------------------------------------------------------------------------------------------
 Kato.Language = "es"
 Kato.LanguageOrder = { "es", "en" }
 Kato.LanguageNames = { es = "Español", en = "English" }
@@ -4084,7 +4001,9 @@ function Window:CreateSettingsTab(name, icon)
     about:AddButton({ Name = SK("Unload"), Icon = "x", Style = "Danger", Confirm = true, Callback = function() Kato:Unload() end })
     return tab
 end
-
+----------------------------------------------------------------------------------------------------
+-- UNLOAD
+----------------------------------------------------------------------------------------------------
 function Kato:OnUnload(fn) table.insert(self._onUnload, fn) end
 
 function Kato:Unload()
