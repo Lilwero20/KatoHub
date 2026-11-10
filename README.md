@@ -7,7 +7,7 @@
 Ventana con pestañas · tarjetas con sombras suaves · 11 tipos de elementos · notificaciones · diálogos ·
 configuraciones guardadas · 8 temas · español / inglés en vivo · barra animada · Key System incluido
 
-`v3.5.0`
+`v3.6.0`
 
 </div>
 
@@ -16,6 +16,7 @@ configuraciones guardadas · 8 temas · español / inglés en vivo · barra anim
 ## 📑 Índice
 
 - [Características](#-características)
+- [Novedades](#-novedades)
 - [Instalación](#-instalación)
 - [Inicio rápido (30 segundos)](#-inicio-rápido-30-segundos)
 - [Cómo está organizada](#-cómo-está-organizada)
@@ -41,6 +42,7 @@ configuraciones guardadas · 8 temas · español / inglés en vivo · barra anim
 - **Diseño Soft UI**: tarjetas elevadas, controles hundidos y sombras suaves, con buen contraste (texto ≥ 4.5:1).
 - **11 elementos**: Botón, Toggle, Slider, Dropdown (simple / múltiple / con buscador), Input, Keybind, Color Picker, Barra de progreso, Label, Párrafo y Divisor.
 - **Español por defecto** y cambio a inglés **en vivo** desde los ajustes (y puedes añadir más idiomas).
+- **Elige tu idioma**: la primera vez que se ejecuta, el jugador elige su idioma y se guarda para las siguientes veces.
 - **Configuraciones**: guarda, carga, borra y carga automáticamente al iniciar.
 - **8 temas** + color de acento personalizable.
 - **Barra animada**: al minimizar, la ventana se transforma en una barra arriba al centro; un clic la vuelve a abrir.
@@ -48,6 +50,19 @@ configuraciones guardadas · 8 temas · español / inglés en vivo · barra anim
 - **Responsive**: se adapta a pantallas pequeñas y móviles (modo compacto y una sola columna).
 - **Key System** con el mismo estilo, que guarda la key del jugador.
 - Sin assets obligatorios: todo se dibuja con Frames.
+
+---
+
+## 🆕 Novedades
+
+| Versión | Cambios |
+|---|---|
+| **v3.6** | Selector **"Elige tu idioma"** la primera vez que se ejecuta el script; la elección se guarda. El Key System pregunta antes de mostrar la pantalla de key. Nuevo `Kato:AskLanguage()` y opción `AskLanguage`. |
+| **v3.5** | Barra rehecha (ancho exacto), flechita al pasar el ratón, rebote al minimizar y transformación ventana ↔ barra más suave. |
+| **v3.4** | La barra reemplaza al botón flotante: al minimizar, la ventana se transforma en la barra y un clic la vuelve a abrir. |
+| **v3.3** | Español por defecto, idioma en Ajustes y textos traducibles `{ es = ..., en = ... }`. |
+
+> Si actualizas, sube **los dos** archivos (`KatoLib.lua` y `KatoKeySystem.lua`) para que todo funcione igual.
 
 ---
 
@@ -106,6 +121,8 @@ Window:CreateSettingsTab() -- tema, idioma, escala, configs...
 Window:CreateWatermark()   -- barra de arriba (fps, ping, hora)
 ```
 
+> 🌎 La primera vez que lo ejecutes aparecerá **"Elige tu idioma"**. Lo que elijas se guarda y no vuelve a preguntar.
+
 ---
 
 ## 🧱 Cómo está organizada
@@ -134,7 +151,8 @@ local Window = Kato:CreateWindow({
     Icon = "rbxassetid://110461677380547",      -- logo (rbxassetid o número)
     ToggleKey = Enum.KeyCode.RightShift,        -- tecla para abrir / cerrar
     Folder = "KatoHub",                         -- carpeta donde se guardan ajustes y configs
-    Language = "es",                            -- idioma inicial: "es" o "en"
+    Language = "es",                            -- idioma inicial / sugerido: "es" o "en"
+    AskLanguage = true,                         -- 1ª vez: "Elige tu idioma" (se guarda)
     ProfileSubtitle = "Miembro VIP",            -- texto bajo el nombre del jugador
     Width = 820, Height = 540,                  -- tamaño (se ajusta solo en pantallas chicas)
     Glass = false,                              -- ventana translúcida
@@ -162,6 +180,8 @@ local Window = Kato:CreateWindow({
 | `Intro` | bool | `true` | Animación de entrada. |
 | `FloatingButton` | bool | `true` | Botón flotante para abrir el menú (si no usas la barra). |
 | `SaveSettings` | bool | `true` | Guarda los ajustes en `Folder/settings.json`. |
+| `Language` | `"es"` / `"en"` | `"es"` | Idioma inicial (si el jugador ya eligió uno, manda el suyo). |
+| `AskLanguage` | bool | `true` | La primera vez pregunta al jugador qué idioma quiere y lo guarda. |
 
 **Métodos útiles:**
 
@@ -524,6 +544,20 @@ Window:LoadAutoloadConfig()      -- ponlo al FINAL de tu script
 
 La interfaz sale en **español**. El jugador puede cambiar a **inglés** en *Ajustes → Apariencia → Idioma*, y todo cambia al instante.
 
+**Primera vez que se ejecuta el script.** Si el jugador todavía no tiene un idioma guardado, antes de abrir el menú aparece una ventanita **"Elige tu idioma / Choose your language"** con un botón por cada idioma disponible. Lo que elija se guarda en `Folder/settings.json` y **no se vuelve a preguntar**; siempre puede cambiarlo luego en Ajustes.
+
+- No tienes que escribir nada: `CreateWindow` lo hace solo. Si usas el **Key System** con `Library = Kato`, la pregunta sale antes de la pantalla de key, así esa pantalla ya aparece en el idioma elegido.
+- Primero se sugiere el idioma del cliente de Roblox (si está traducido); si no, el de `Language`.
+- Solo aparece si hay **2 o más idiomas** y el executor puede guardar archivos (si no, preguntaría en cada ejecución).
+
+```lua
+-- no preguntar nunca (se usa Language directamente)
+local Window = Kato:CreateWindow({ Title = "Kato Hub", Language = "es", AskLanguage = false })
+
+-- volver a preguntar a mano (por ejemplo desde un botón)
+Kato:AskLanguage({ Force = true })
+```
+
 Para que **tus textos** también se traduzcan, en lugar de un string usa una tabla `{ es = ..., en = ... }`:
 
 ```lua
@@ -659,7 +693,8 @@ KeySystem.Prompt({
 | `Folder` | `"KatoHub"` | Carpeta donde se guarda la key. |
 | `MaxAttempts` / `Cooldown` | `5` / `20` | Intentos antes de bloquear y segundos de espera. |
 | `CaseSensitive` | `true` | Distingue mayúsculas. |
-| `Language` | idioma de `Library` o `"es"` | `"es"` / `"en"`. |
+| `Language` | idioma de `Library` o `"es"` | `"es"` / `"en"`. Si lo pones, no se pregunta el idioma. |
+| `AskLanguage` | `true` | Con `Library = Kato`, la primera vez pregunta el idioma antes de la pantalla de key. |
 | `Library` | — | Kato Lib, para heredar tema e idioma. |
 | `Accent`, `Accent2`, `Theme` | — | Colores propios si no usas `Library`. |
 | `OnSuccess(key)` / `OnFail(key, msg)` / `OnClose()` | — | Callbacks. |
@@ -998,6 +1033,20 @@ Tips:AddLabel(T("Cambia el idioma en <b>Ajustes → Idioma</b>.", "Change the la
 Tips:AddDivider()
 Tips:AddLabel(T("Minimiza el menú y vuelve a abrirlo con la barra de arriba.", "Minimize the menu and reopen it from the bar at the top."))
 
+-- idioma: se eligió la primera vez que se ejecutó el script; este botón vuelve a preguntar
+local LangSec = InfoTab:CreateSection({ Name = T("Idioma", "Language"), Icon = "chat", Wide = true })
+local function currentText(code)
+    return (code == "es" and "Idioma actual: <b>" or "Current language: <b>") .. Kato:GetLanguageName(code) .. "</b>"
+end
+local Current = LangSec:AddLabel(currentText(Kato:GetLanguage()))
+Kato:OnLanguageChanged(function(code) Current:Set(currentText(code)) end)
+LangSec:AddButton({
+    Name = T("Volver a elegir idioma", "Choose language again"), Icon = "chat",
+    Callback = function()
+        task.spawn(function() Kato:AskLanguage({ Force = true }) end) -- espera a que el jugador elija
+    end,
+})
+
 ---------------------------------------------------------------- OTROS
 Window:AddCategory(T("Otros", "Other"))
 Window:CreateSettingsTab()
@@ -1044,6 +1093,7 @@ end
 | `Kato:SetAccent(color1, color2?)` | Color de acento. |
 | `Kato:SetLanguage(code)` / `Kato:GetLanguage()` / `Kato:GetLanguages()` | Idioma. |
 | `Kato:AddLanguage(code, nombre, textos)` / `Kato:OnLanguageChanged(fn)` / `Kato:Tr(texto)` | Idiomas extra. |
+| `Kato:AskLanguage({ Force = true })` | Muestra el selector "Elige tu idioma" y guarda la elección (espera a que el jugador elija). |
 | `Kato:GetIcons()` | Lista de iconos. |
 | `Kato:OnUnload(fn)` / `Kato:Unload()` | Limpieza al cerrar / cerrar todo. |
 | `Kato.Flags` | Elementos con `Flag` (`Kato.Flags.X.Value`). |
@@ -1079,6 +1129,9 @@ Haz clic en la barra de arriba (si usas `CreateWatermark()`), pulsa la tecla del
 
 **Mis textos salen en español aunque cambié a inglés.**
 Ese texto está como string normal. Escríbelo como tabla: `Name = { es = "Velocidad", en = "Speed" }`.
+
+**Ya elegí idioma y quiero que me vuelva a preguntar.**
+Borra `KatoHub/settings.json` en la carpeta `workspace` de tu executor, o llama a `Kato:AskLanguage({ Force = true })`.
 
 **¿Dónde se guardan las configs?**
 En la carpeta `workspace` de tu executor: `KatoHub/configs/*.json` (o la carpeta que pongas en `Folder`).
