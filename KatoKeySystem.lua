@@ -290,6 +290,10 @@ function KeySystem.new(opts)
         Theme.Accent2Text, Theme.Accent2Soft = Theme.AccentText, Theme.AccentSoft
     end
 
+    -- primera vez: Kato Lib (v3.6+) pregunta el idioma antes de mostrar la pantalla de key y lo guarda
+    if lib and type(lib.AskLanguage) == "function" and opts.Language == nil and opts.AskLanguage ~= false then
+        pcall(lib.AskLanguage, lib)
+    end
     -- idioma: opts.Language > idioma activo de Kato Lib > espanol
     local langCode = opts.Language or (lib and type(lib.Language) == "string" and lib.Language) or "es"
     local Str = {}
