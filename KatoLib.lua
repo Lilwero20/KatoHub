@@ -1,3 +1,83 @@
+--[[
+    Kato Lib  v3.6.0
+    Libreria de UI para Kato Hub (Roblox / Luau). Estilo Soft UI (neumorphism claro) con contraste:
+    3 niveles de superficie (Sidebar < Background < Card), sombras marcadas y bordes accesibles
+    (texto >= 4.5:1, bordes de controles >= 3:1). Ver Theme.ControlEdges.
+
+    USO RAPIDO
+        local Kato = loadstring(game:HttpGet("URL/KatoLib.lua"))()
+        local Window = Kato:CreateWindow({
+            Title = "Kato Hub", Subtitle = "v3.0 Premium",
+            Icon = "rbxassetid://110461677380547",
+            ToggleKey = Enum.KeyCode.RightShift, Folder = "KatoHub",
+        })
+        Window:AddCategory("Main")
+        local Home = Window:CreateTab({ Name = "Home", Icon = "home", Description = "Welcome to Kato Hub" })
+        local Farm = Home:CreateSection({ Name = "Farming", Icon = "bolt", Description = "Automate your progress" })
+        Farm:AddToggle({ Name = "Auto Farm", Icon = "target", Flag = "AutoFarm", Callback = function(v) end })
+
+    ICONOS
+        Icon acepta un nombre del set integrado (Kato:GetIcons()), un rbxassetid / numero, o 1-2 letras.
+
+    SECCIONES
+        Tab:CreateSection({ Name, Description, Icon, Side = "Left"|"Right", Wide = true })
+
+    ELEMENTOS (Section)
+        AddButton, AddToggle, AddSlider, AddDropdown, AddInput (AddTextbox/AddTextBox), AddKeybind,
+        AddColorPicker, AddProgress, AddLabel, AddParagraph, AddDivider
+        Opciones comunes: Name, Description, Icon, Flag, Tooltip, Disabled, Callback
+        Objetos: :Set(v) :Get() :SetVisible(b) :SetDisabled(b) :OnChanged(fn) :Destroy()
+
+    WINDOW
+        CreateTab, AddCategory, SelectTab, GetTab, Notify, Dialog, Toggle/Show/Hide/SetVisible,
+        SetTitle, SetSubtitle, SetGlass, SetGlassStrength, SetBlur, SetScale, SetToggleKey,
+        CreateSettingsTab, CreateWatermark, SaveConfig, LoadConfig, DeleteConfig, GetConfigs,
+        SetAutoload, GetAutoload, LoadAutoloadConfig, Destroy
+
+    LIBRERIA
+        Kato:Notify, Kato:SetTheme(nombre|tabla), Kato:SetAccent(c1, c2), Kato:GetThemes(),
+        Kato:AddTheme(nombre, tabla), Kato:GetIcons(), Kato:OnUnload(fn), Kato:Unload(), Kato.Flags
+        Kato.Style  -> tabla Theme completa (colores, radios, espacios, textos, tiempos, sombras)
+        Kato.Theme  -> solo los colores (compatibilidad con v1/v2)
+        Kato.Neu    -> helpers de sombras (Neu.raised, Neu.inset) para tus propios elementos
+
+    BARRA (v3.5)
+        Window:CreateWatermark() crea la barra (logo, fps, ping, hora) arriba al centro. Con el menu abierto se
+        oculta; al minimizar, la ventana se transforma en la barra y un click en ella la vuelve a abrir (reemplaza
+        al boton flotante). Al pasar el raton aparece una flecha; al minimizar la barra rebota con una onda de acento.
+        CreateWatermark({ Toggle = false }) = barra fija solo informativa, como antes.
+        Otras opciones: Position, AnchorPoint, Text, FPS, Ping, Time.
+
+    IDIOMAS (v3.3)
+        La interfaz sale en espanol por defecto. CreateWindow({ Language = "en" }) cambia el idioma inicial;
+        lo que el jugador elija en Ajustes > Idioma se guarda en settings.json y tiene prioridad.
+        Primera vez (v3.6): si no hay idioma guardado, CreateWindow (y el Key System) muestran un selector
+        "Elige tu idioma" con los idiomas disponibles; la eleccion se guarda y no se vuelve a preguntar.
+        Solo aparece si hay 2+ idiomas y el executor puede guardar archivos. Desactivar: CreateWindow({ AskLanguage = false }).
+        Preguntar de nuevo a mano: Kato:AskLanguage({ Force = true }).
+        Cualquier texto (Name, Description, Title, Content, Placeholder, Tooltip, Badge, AddCategory,
+        AddDivider, AddLabel...) acepta un string o una tabla de traducciones:
+            Farm:AddToggle({ Name = { es = "Granjeo automatico", en = "Auto Farm" }, Flag = "AutoFarm" })
+        Dropdowns: el valor no cambia, solo lo que se ve -> Labels = { Nearest = { es = "Mas cercano", en = "Nearest" } }
+        Kato:SetLanguage("en"), Kato:GetLanguage(), Kato:GetLanguages(), Kato:GetLanguageName(code),
+        Kato:AddLanguage("pt", "Portugues", { None = "Nenhum", ... }), Kato:OnLanguageChanged(fn), Kato:Tr(texto)
+    TEMAS
+        "Kato" (por defecto) y "Orchid" (lila + violeta + fucsia), ademas de Sakura, Mint, Ocean, Sand,
+        Graphite y Midnight. Accent2 es el segundo acento (badges, barra de progreso, notificaciones Info);
+        si un tema no lo define vale lo mismo que Accent y se ve igual que con un solo acento.
+
+    SOMBRAS
+        Roblox no tiene box-shadow. Por defecto cada sombra se dibuja con Frames redondeados
+        concentricos (uno cada SHADOW_STEP px de difuminado; no hace falta ningun asset). Si quieres un difuminado mas fino, sube esta imagen
+        y pon su id en SHADOW_IMAGE:
+          - PNG de 160 x 160 px con fondo transparente.
+          - Un cuadrado blanco (#FFFFFF) de 96 x 96 px centrado (32 px de margen a cada lado),
+            con esquinas redondeadas de 16 px.
+          - Desenfoque gaussiano de 12 px de radio. El difuminado tiene que acabar antes del borde.
+          - SliceCenter = Rect.new(64, 64, 96, 96)  (la zona central queda totalmente opaca).
+        La libreria tine la imagen con ImageColor3 (blanco para la luz, #A9B0CB para la sombra).
+]]
+
 local SHADOW_IMAGE = ""                         -- rbxassetid de la sombra 9-slice (opcional, ver arriba)
 local SHADOW_SLICE = Rect.new(64, 64, 96, 96)   -- SliceCenter de esa imagen
 local SHADOW_EDGE = 32                          -- px entre el borde de la imagen y el de la forma
@@ -16,7 +96,7 @@ local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 
 local Kato = {
-    Version = "3.5.0",
+    Version = "3.6.0",
     Flags = {},
     Windows = {},
     Unloaded = false,
@@ -36,6 +116,13 @@ Kato.Config = {
     Dropdown = { MaxVisible = 6, SearchAt = 8 },
 }
 
+----------------------------------------------------------------------------------------------------
+-- IDIOMAS
+--   Kato.Strings tiene los textos internos del idioma activo (la misma tabla de siempre).
+--   Cualquier texto de la API (Name, Description, Title, Content, Placeholder, Tooltip, Badge...)
+--   acepta un string o una tabla de traducciones: { es = "Velocidad", en = "Speed" }.
+--   Kato:SetLanguage("en") cambia todo en vivo. Para traducir textos internos edita Kato.Languages.
+----------------------------------------------------------------------------------------------------
 Kato.Language = "es"
 Kato.LanguageOrder = { "es", "en" }
 Kato.LanguageNames = { es = "Español", en = "English" }
@@ -46,6 +133,7 @@ Kato.Languages = {
         CloseTitle = "¿Cerrar Kato Hub?", CloseBody = "La interfaz se descargará. Vuelve a ejecutar el script para abrirla.",
         Cancel = "Cancelar", Close = "Cerrar", Hidden = "Pulsa %s para volver a abrir el menú",
         HiddenBar = "Haz clic en la barra de arriba o pulsa %s para volver a abrir el menú", OpenMenu = "Abrir el menú",
+        ChooseLanguage = "Elige tu idioma", ChangeLater = "Podrás cambiarlo cuando quieras en Ajustes",
         Selected = "%d seleccionados", NoResults = "Sin resultados",
         -- pestaña de ajustes
         Settings = "Ajustes", SettingsDesc = "Interfaz, tema y configuraciones",
@@ -73,6 +161,7 @@ Kato.Languages = {
         CloseTitle = "Close Kato Hub?", CloseBody = "The interface will be unloaded. Run the script again to reopen it.",
         Cancel = "Cancel", Close = "Close", Hidden = "Press %s to open the menu again",
         HiddenBar = "Click the bar at the top or press %s to open the menu again", OpenMenu = "Open the menu",
+        ChooseLanguage = "Choose your language", ChangeLater = "You can change it anytime in Settings",
         Selected = "%d selected", NoResults = "No results",
         Settings = "Settings", SettingsDesc = "Interface, theme and configs",
         Appearance = "Appearance", AppearanceDesc = "Theme, color and language",
@@ -1361,12 +1450,23 @@ function Kato:CreateWindow(o)
             self.ToggleKey = toKey(st.ToggleKey) or self.ToggleKey
         end
     end
-    -- idioma: el elegido por el jugador (settings.json) manda; si no hay, o.Language (por defecto "es")
+    -- idioma: 1) el guardado en settings.json  2) el elegido en esta sesion (selector / key system)
+    -- 3) primera vez: se pregunta al jugador con el selector (AskLanguage = false lo desactiva)  4) o.Language
     local lang = o.Language
-    if Kato._stateOn and type(Kato._state.Language) == "string" and Kato.Languages[Kato._state.Language] then
-        lang = Kato._state.Language
+    local saved = Kato._stateOn and type(Kato._state.Language) == "string" and Kato.Languages[Kato._state.Language] and Kato._state.Language
+    if saved then
+        lang = saved
+        Kato._langChosen = true
+    elseif Kato._langChosen then
+        lang = Kato.Language
+    elseif o.AskLanguage ~= false and Kato._stateOn then
+        lang = Kato:AskLanguage({ Default = o.Language, Icon = o.Icon }) -- espera a que el jugador elija
     end
     if lang and Kato.Languages[lang] and lang ~= Kato.Language then Kato:SetLanguage(lang, true) end
+    if Kato._stateOn and Kato._langChosen and Kato._state.Language ~= Kato.Language then
+        Kato._state.Language = Kato.Language
+        saveState()
+    end
     self.Title, self.Subtitle = tr(self._titleSrc), tr(self._subtitleSrc)
 
     -- la ventana es una superficie elevada con sombra difusa que sigue su radio
@@ -2242,6 +2342,126 @@ function Window:Dialog(o)
     tween(ds.Holder, { Position = UDim2.fromScale(0.5, 0.5) }, M.Slow)
     ds:Set("Popup", M.Slow)
     return { Close = close }
+end
+
+----------------------------------------------------------------------------------------------------
+-- SELECTOR DE IDIOMA (primera vez): se muestra una sola vez y la eleccion se guarda en settings.json
+----------------------------------------------------------------------------------------------------
+-- Kato:AskLanguage({ Folder, Default, Icon, Force }) -> codigo elegido ("es", "en"...)
+-- Si ya hay un idioma guardado lo aplica sin preguntar. Solo pregunta si hay 2 o mas idiomas y el
+-- executor puede guardar archivos (si no, preguntaria en cada ejecucion). Force = true pregunta igual.
+-- Bloquea (yield) hasta que el jugador elige. CreateWindow lo llama solo; el Key System tambien.
+function Kato:AskLanguage(o)
+    o = o or {}
+    if o.Folder then Kato.Config.Folder = o.Folder end
+    local path = Kato.Config.Folder .. "/settings.json"
+    local st = readJSON(path)
+    if type(st) ~= "table" then st = nil end
+    local saved = st and type(st.Language) == "string" and Kato.Languages[st.Language] and st.Language
+    if saved and not o.Force then
+        if saved ~= Kato.Language then Kato:SetLanguage(saved, true) end
+        Kato._langChosen = true
+        return saved
+    end
+    if Kato._langChosen and not o.Force then return Kato.Language end
+    local langs = {}
+    for _, code in ipairs(Kato.LanguageOrder) do if Kato.Languages[code] then table.insert(langs, code) end end
+    if #langs < 2 or (not hasFS() and not o.Force) then return Kato.Language end
+    if Kato._asking then
+        -- ya hay un selector abierto: esperar su resultado
+        while Kato._asking and not Kato.Unloaded do task.wait() end
+        return Kato.Language
+    end
+    Kato._asking = true
+
+    -- sugerido: el idioma del cliente de Roblox si esta traducido; si no, Default o el actual
+    local suggested = o.Default and Kato.Languages[o.Default] and o.Default or Kato.Language
+    pcall(function()
+        local loc = string.lower(string.sub(tostring(LocalPlayer.LocaleId or ""), 1, 2))
+        if Kato.Languages[loc] then suggested = loc end
+    end)
+    -- el sugerido va primero
+    local ordered = { suggested }
+    for _, code in ipairs(langs) do if code ~= suggested then table.insert(ordered, code) end end
+    local function pack(code) return Kato.Languages[code] or Kato.Languages.en end
+
+    local overlay = create("TextButton", {
+        Name = "KatoLanguagePicker", Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0),
+        BackgroundTransparency = 1, AutoButtonColor = false, Text = "", ZIndex = 300, Parent = gui,
+    })
+    local ds = Neu.raised(overlay, centered({ Size = UDim2.fromOffset(300, 0) }), "Popup", R.Card, true)
+    ds:Set("Flat", 0)
+    local scale = create("UIScale", { Scale = 0.92, Parent = ds.Holder })
+    local inner = create("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Parent = ds.Face })
+    pad(inner, S.XL, S.XL, S.XL, S.L)
+    local lay = list(inner, S.S)
+    lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    local top = create("Frame", { Size = UDim2.new(1, 0, 0, 52), BackgroundTransparency = 1, LayoutOrder = 1, Parent = inner })
+    local logo = create("ImageLabel", centered({ Size = UDim2.fromOffset(44, 44), Image = o.Icon or DEFAULT_ICON, Parent = top }))
+    corner(logo, R.Control)
+    local title = label({
+        Parent = inner, LayoutOrder = 2, Text = pack(suggested).ChooseLanguage, FontFace = F.Bold, TextSize = TS.Dialog,
+        TextXAlignment = Enum.TextXAlignment.Center, Size = UDim2.new(1, 0, 0, 24),
+    })
+    -- el mismo mensaje en los demas idiomas, para quien no lea el primero
+    local others = {}
+    for i = 2, #ordered do table.insert(others, pack(ordered[i]).ChooseLanguage) end
+    label({
+        Parent = inner, LayoutOrder = 3, Text = table.concat(others, "  ·  "), FontFace = F.Regular, TextSize = TS.Desc,
+        TextColor3 = T("Muted"), TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true,
+        TextTruncate = Enum.TextTruncate.None, AutomaticSize = Enum.AutomaticSize.Y, Size = UDim2.new(1, 0, 0, 0),
+    })
+    create("Frame", { Size = UDim2.new(1, 0, 0, S.XS), BackgroundTransparency = 1, LayoutOrder = 4, Parent = inner })
+
+    local chosen
+    local foot
+    for i, code in ipairs(ordered) do
+        local name = Kato.LanguageNames[code] or code
+        local btn = actionButton(inner, name, i == 1 and "Primary" or "Default", {
+            Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 10 + i,
+        })
+        btn.Name = "KatoLang_" .. code
+        -- al pasar el raton, el titulo y la nota cambian al idioma de ese boton
+        btn.MouseEnter:Connect(function()
+            title.Text = pack(code).ChooseLanguage
+            if foot then foot.Text = pack(code).ChangeLater end
+        end)
+        btn.MouseButton1Click:Connect(function() if not chosen then chosen = code end end)
+    end
+    foot = label({
+        Parent = inner, LayoutOrder = 100, Text = pack(suggested).ChangeLater, FontFace = F.Regular, TextSize = TS.Caption,
+        TextColor3 = T("Muted"), TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true,
+        TextTruncate = Enum.TextTruncate.None, AutomaticSize = Enum.AutomaticSize.Y, Size = UDim2.new(1, 0, 0, 0),
+    })
+
+    -- entrada
+    tween(overlay, { BackgroundTransparency = 0.45 }, M.Slow)
+    tween(scale, { Scale = 1 }, 0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    ds:Set("Popup", M.Slow)
+
+    while not chosen and not Kato.Unloaded do task.wait() end
+    chosen = chosen or Kato.Language
+
+    -- salida
+    tween(overlay, { BackgroundTransparency = 1 }, M.Base)
+    tween(scale, { Scale = 0.9 }, M.Base, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    ds:Set("Flat", M.Fast)
+    task.delay(dur(M.Base) * 0.6, function() pcall(function() ds.Holder.Visible = false end) end)
+    task.delay(dur(M.Base) + 0.05, function() pcall(function() overlay:Destroy() end) end)
+
+    Kato:SetLanguage(chosen, true)
+    -- se guarda al momento (sin esperar al guardado diferido), mezclado con lo que ya hubiera
+    local data = readJSON(path)
+    if type(data) ~= "table" then data = {} end
+    data.Language = chosen
+    writeJSON(path, data)
+    -- si ya hay una ventana con ajustes cargados, que su proximo guardado no pise la eleccion
+    if type(Kato._state) == "table" then Kato._state.Language = chosen end
+    Kato._langChosen = true
+    Kato._asking = false
+    task.wait(dur(M.Base) * 0.5)
+    return chosen
 end
 
 ----------------------------------------------------------------------------------------------------
